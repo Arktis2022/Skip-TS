@@ -14,9 +14,8 @@ import argparse
 from test import evaluation_me,evaluation_visualization,evaluation,evaluation_visualization_no_seg
 from torch.nn import functional as F
 import argparse
-import cutpaste
 import sys
-# ÉèÖÃËæ»úÊıÖÖ×Ó
+# è®¾ç½®éšæœºæ•°ç§å­
 def setup_seed(seed): 
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -25,21 +24,21 @@ def setup_seed(seed):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     
-# ËğÊ§º¯Êı£¬ÕâÀï¿ÉÒÔ×öÏûÈÚÑĞ¾¿
-def loss_fucntion(a, b, L2): # ÊäÈëÁ½¸öÕÅÁ¿Êı×é
+# æŸå¤±å‡½æ•°ï¼Œè¿™é‡Œå¯ä»¥åšæ¶ˆèç ”ç©¶
+def loss_fucntion(a, b, L2): # è¾“å…¥ä¸¤ä¸ªå¼ é‡æ•°ç»„
     cos_loss = torch.nn.CosineSimilarity()
     #print(a[0].size()) # a[0] = [16,256,64,64]
     #print(a[1].size()) # a[1] = [16,512,32,32]
     #print(a[2].size()) # a[2] = [16,1024,16,16]
     loss = 0
     
-    # Ê¹ÓÃcosloss
+    # ä½¿ç”¨cosloss
     if L2 == 0:
-        for item in range(len(a)): # ¸ù¾İaÖĞµÄÃ¿Ò»¸öÕÅÁ¿
-            #print( torch.mean((1-cos_loss(a[item].view(a[item].shape[0],-1),b[item].view(b[item].shape[0],-1)))) ) # ¼ÆËãµÃµ½µÄ16¸öÊı×Ö£¨batch.sizeÊÇ16£©
-            loss += torch.mean(1-cos_loss(a[item].view(a[item].shape[0],-1),b[item].view(b[item].shape[0],-1)))  # °´Í¨µÀ£¬¼ÆËãËğÊ§º¯ÊıÍ¼£¬ÇóÆä¾ùÖµ£¬Ö®ºó°Ñ¸÷¸öÊı×éµÄlossÖ±½Ó¼ÓÆğÀ´£»mean()º¯ÊıµÄ²ÎÊı£ºdim=0,°´ÁĞÇóÆ½¾ùÖµ£¬·µ»ØµÄĞÎ×´ÊÇ£¨1£¬ÁĞÊı£©£»dim=1,°´ĞĞÇóÆ½¾ùÖµ£¬·µ»ØµÄĞÎ×´ÊÇ£¨ĞĞÊı£¬1£©,Ä¬ÈÏ²»ÉèÖÃdimµÄÊ±ºò£¬·µ»ØµÄÊÇËùÓĞÔªËØµÄÆ½¾ùÖµ
+        for item in range(len(a)): # æ ¹æ®aä¸­çš„æ¯ä¸€ä¸ªå¼ é‡
+            #print( torch.mean((1-cos_loss(a[item].view(a[item].shape[0],-1),b[item].view(b[item].shape[0],-1)))) ) # è®¡ç®—å¾—åˆ°çš„16ä¸ªæ•°å­—ï¼ˆbatch.sizeæ˜¯16ï¼‰
+            loss += torch.mean(1-cos_loss(a[item].view(a[item].shape[0],-1),b[item].view(b[item].shape[0],-1)))  # æŒ‰é€šé“ï¼Œè®¡ç®—æŸå¤±å‡½æ•°å›¾ï¼Œæ±‚å…¶å‡å€¼ï¼Œä¹‹åæŠŠå„ä¸ªæ•°ç»„çš„lossç›´æ¥åŠ èµ·æ¥ï¼›mean()å‡½æ•°çš„å‚æ•°ï¼šdim=0,æŒ‰åˆ—æ±‚å¹³å‡å€¼ï¼Œè¿”å›çš„å½¢çŠ¶æ˜¯ï¼ˆ1ï¼Œåˆ—æ•°ï¼‰ï¼›dim=1,æŒ‰è¡Œæ±‚å¹³å‡å€¼ï¼Œè¿”å›çš„å½¢çŠ¶æ˜¯ï¼ˆè¡Œæ•°ï¼Œ1ï¼‰,é»˜è®¤ä¸è®¾ç½®dimçš„æ—¶å€™ï¼Œè¿”å›çš„æ˜¯æ‰€æœ‰å…ƒç´ çš„å¹³å‡å€¼
     
-    # Ê¹ÓÃl2loss+cosloss
+    # ä½¿ç”¨l2loss+cosloss
     if L2 == 2:
         l2_loss = torch.nn.MSELoss()
         for item in range(len(a)):
@@ -47,7 +46,7 @@ def loss_fucntion(a, b, L2): # ÊäÈëÁ½¸öÕÅÁ¿Êı×é
              loss += 0.5*torch.mean(1-cos_loss(a[item].view(a[item].shape[0],-1),b[item].view(b[item].shape[0],-1)))
     loss2 = loss_fucntion_2(a,b)
     
-    # Ê¹ÓÃl2loss
+    # ä½¿ç”¨l2loss
     if L2 == 1:
         l2_loss = torch.nn.MSELoss()
         for item in range(len(a)):
@@ -58,18 +57,18 @@ def loss_fucntion(a, b, L2): # ÊäÈëÁ½¸öÕÅÁ¿Êı×é
     #sys.exit()
     return loss,loss2
     
-# ³¢ÊÔ¼ÆËã×é¼äÒ»ÖÂĞÔËğÊ§
+# å°è¯•è®¡ç®—ç»„é—´ä¸€è‡´æ€§æŸå¤±
 
-def loss_fucntion_2(a, b): # ÊäÈëÁ½¸öÕÅÁ¿Êı×é
+def loss_fucntion_2(a, b): # è¾“å…¥ä¸¤ä¸ªå¼ é‡æ•°ç»„
     mse_loss = torch.nn.MSELoss()
-    # ½«a2ºÍb2ÉÏ²ÉÑùµÃµ½µÄ½á¹ûºÍa1¡¢b1Ã»ÉÏ²ÉÑùµÃµ½µÄ½á¹û±È½Ï
+    # å°†a2å’Œb2ä¸Šé‡‡æ ·å¾—åˆ°çš„ç»“æœå’Œa1ã€b1æ²¡ä¸Šé‡‡æ ·å¾—åˆ°çš„ç»“æœæ¯”è¾ƒ
     a2 = F.interpolate(a[2], size=32, mode='bilinear', align_corners=True)
     b2 = F.interpolate(b[2], size=32, mode='bilinear', align_corners=True)
     l2 = torch.mean(mse_loss(a2.view(a2.shape[0],-1),b2.view(b2.shape[0],-1)))
     l1 = torch.mean(mse_loss(a[1].view(a[1].shape[0],-1),b[1].view(b[1].shape[0],-1)))
     loss2_1 = torch.abs(l2-l1)
     
-    # ½«a1ºÍb1ÉÏ²ÉÑùµÃµ½½á¹û£¬Óëa0ºÍb0Ã»ÉÏ²ÉÓÃµÃµ½µÄ½á¹û±È½Ï
+    # å°†a1å’Œb1ä¸Šé‡‡æ ·å¾—åˆ°ç»“æœï¼Œä¸a0å’Œb0æ²¡ä¸Šé‡‡ç”¨å¾—åˆ°çš„ç»“æœæ¯”è¾ƒ
     l0 = torch.mean(mse_loss(a[0].view(a[0].shape[0],-1),b[0].view(b[0].shape[0],-1)))
     
     a1 = F.interpolate(a[1], size=64, mode='bilinear', align_corners=True)
@@ -99,7 +98,7 @@ def train(class_,epochs,learning_rate,res,batch_size,print_epoch,seg,data_path,s
     train_data = ImageFolder(root=train_path, transform=data_transform)
     train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True,num_workers=8)
     
-    # ÊÇ·ñĞèÒª·Ö¸îÍ¼Ïñ
+    # æ˜¯å¦éœ€è¦åˆ†å‰²å›¾åƒ
     if seg==0:  
         test_data = MVTecDataset(root=test_path, transform=data_transform,phase="test") 
         test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=1, shuffle=False,num_workers=8)
@@ -107,51 +106,49 @@ def train(class_,epochs,learning_rate,res,batch_size,print_epoch,seg,data_path,s
         test_data = MVTecDataset_seg(root=test_path, transform=data_transform,gt_transform = gt_transform,phase="test") 
         test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=1, shuffle=False,num_workers=8)
         
-    # Ñ¡ÔñÊ¹ÓÃÊ²Ã´ÍøÂç
+    # é€‰æ‹©ä½¿ç”¨ä»€ä¹ˆç½‘ç»œ
     if net == 'wide_res50':   
-        encoder = wide_resnet50_2(pretrained=True) # ±àÂëÆ÷
+        encoder = wide_resnet50_2(pretrained=True) # ç¼–ç å™¨
         encoder = encoder.to(device)
-        encoder.eval() # ¹Ì¶¨±àÂëÆ÷Ä£ĞÍ²ÎÊı    
-        decoder = de_wide_resnet50_2(pretrained=False) # ½âÂëÆ÷£¬Îª±àÂëÆ÷µÄ·´Ïò½á¹¹
+        encoder.eval() # å›ºå®šç¼–ç å™¨æ¨¡å‹å‚æ•°    
+        decoder = de_wide_resnet50_2(pretrained=False) # è§£ç å™¨ï¼Œä¸ºç¼–ç å™¨çš„åå‘ç»“æ„
         decoder = decoder.to(device)
     if net == 'res18':
-        encoder = resnet18(pretrained=True) # ±àÂëÆ÷
+        encoder = resnet18(pretrained=True) # ç¼–ç å™¨
         encoder = encoder.to(device)
-        encoder.eval() # ¹Ì¶¨±àÂëÆ÷Ä£ĞÍ²ÎÊı    
-        decoder = de_resnet18(pretrained=False) # ½âÂëÆ÷£¬Îª±àÂëÆ÷µÄ·´Ïò½á¹¹
+        encoder.eval() # å›ºå®šç¼–ç å™¨æ¨¡å‹å‚æ•°    
+        decoder = de_resnet18(pretrained=False) # è§£ç å™¨ï¼Œä¸ºç¼–ç å™¨çš„åå‘ç»“æ„
         decoder = decoder.to(device)
     if net == 'res34':
-        encoder = resnet34(pretrained=True) # ±àÂëÆ÷
+        encoder = resnet34(pretrained=True) # ç¼–ç å™¨
         encoder = encoder.to(device)
-        encoder.eval() # ¹Ì¶¨±àÂëÆ÷Ä£ĞÍ²ÎÊı    
-        decoder = de_resnet34(pretrained=False) # ½âÂëÆ÷£¬Îª±àÂëÆ÷µÄ·´Ïò½á¹¹
+        encoder.eval() # å›ºå®šç¼–ç å™¨æ¨¡å‹å‚æ•°    
+        decoder = de_resnet34(pretrained=False) # è§£ç å™¨ï¼Œä¸ºç¼–ç å™¨çš„åå‘ç»“æ„
         decoder = decoder.to(device)
     if net == 'res50':
-        encoder = resnet50(pretrained=True) # ±àÂëÆ÷
+        encoder = resnet50(pretrained=True) # ç¼–ç å™¨
         encoder = encoder.to(device)
-        encoder.eval() # ¹Ì¶¨±àÂëÆ÷Ä£ĞÍ²ÎÊı    
-        decoder = de_resnet50(pretrained=False) # ½âÂëÆ÷£¬Îª±àÂëÆ÷µÄ·´Ïò½á¹¹
+        encoder.eval() # å›ºå®šç¼–ç å™¨æ¨¡å‹å‚æ•°    
+        decoder = de_resnet50(pretrained=False) # è§£ç å™¨ï¼Œä¸ºç¼–ç å™¨çš„åå‘ç»“æ„
         decoder = decoder.to(device)
     
-    optimizer = torch.optim.Adam(list(decoder.parameters()), lr=learning_rate, betas=(0.5,0.999)) # ¸øËüÒ»¸ö¿É½øĞĞµü´úÓÅ»¯µÄ°üº¬ÁËËùÓĞ²ÎÊı£¨ËùÓĞµÄ²ÎÊı±ØĞëÊÇ±äÁ¿s£©µÄÁĞ±í
+    optimizer = torch.optim.Adam(list(decoder.parameters()), lr=learning_rate, betas=(0.5,0.999)) # ç»™å®ƒä¸€ä¸ªå¯è¿›è¡Œè¿­ä»£ä¼˜åŒ–çš„åŒ…å«äº†æ‰€æœ‰å‚æ•°ï¼ˆæ‰€æœ‰çš„å‚æ•°å¿…é¡»æ˜¯å˜é‡sï¼‰çš„åˆ—è¡¨
     
     max_auc = []
     max_auc_epoch = []
     max_pr = []
     max_pr_epoch = []
     
-    # ¿ªÊ¼ÑµÁ·
+    # å¼€å§‹è®­ç»ƒ
     for epoch in range(epochs):
         decoder.train()
         loss_list = []
         for img, label in train_dataloader:
-            if cut==1:
-                img = cutpaste.cutpaste(img)
             img = img.to(device) 
             inputs = encoder(img)
             outputs = decoder(inputs[3],inputs[0:3],res)  
             
-            # Ñ¡ÔñËğÊ§º¯Êı  
+            # é€‰æ‹©æŸå¤±å‡½æ•°  
             if layerloss==0:
                 loss = loss_fucntion(inputs[0:3], outputs,L2)[0] 
             if layerloss==1:
@@ -167,10 +164,10 @@ def train(class_,epochs,learning_rate,res,batch_size,print_epoch,seg,data_path,s
         if print_loss==1:
             print('epoch [{}/{}], loss:{:.4f}'.format(epoch + 1, epochs, np.mean(loss_list)))
         if (epoch + 1) % print_epoch == 0:
-            # ²âÊÔ¼¯Ã»ÓĞmask
+            # æµ‹è¯•é›†æ²¡æœ‰mask
             if seg==0:
                 auroc_sp = evaluation_me(encoder, decoder, res, test_dataloader, device,print_canshu,score_num)
-                print('epoch£º', (epoch+1))
+                print('epochï¼š', (epoch+1))
                 print('Sample Auroc{:.3f}'.format(auroc_sp))
                 max_auc.append(auroc_sp)
                 max_auc_epoch.append(epoch+1)
@@ -179,13 +176,13 @@ def train(class_,epochs,learning_rate,res,batch_size,print_epoch,seg,data_path,s
                   print('max_epoch = ', max_auc_epoch[max_auc.index(max(max_auc))])
                 print('------------------')
                 torch.save(decoder.state_dict(), ckp_path+str(epoch+1)+str(seed)+'auc='+str(auroc_sp)+'.pth')
-                if vis==1: # Ã»ÓĞmaskÊ±µÄ¿ÉÊÓ»¯Êä³ö
+                if vis==1: # æ²¡æœ‰maskæ—¶çš„å¯è§†åŒ–è¾“å‡º
                     evaluation_visualization_no_seg(encoder, decoder, res, test_dataloader,device, print_canshu,score_num,img_path)
                     
-            # ²âÊÔ¼¯ÓĞmaskÇÒĞèÒª¶¨Î»
+            # æµ‹è¯•é›†æœ‰maskä¸”éœ€è¦å®šä½
             if seg==1:
-                # Õı³£Á÷³Ì×ßÒ»±é
-                # »æÍ¼
+                # æ­£å¸¸æµç¨‹èµ°ä¸€é
+                # ç»˜å›¾
                 if vis==1:
                     evaluation_visualization(encoder, decoder, res, test_dataloader,device, print_canshu,score_num,img_path)
                 auroc_px, auroc_sp, aupro_px = evaluation(encoder,decoder,res,test_dataloader, device,img_path)
@@ -203,27 +200,27 @@ def train(class_,epochs,learning_rate,res,batch_size,print_epoch,seg,data_path,s
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epochs', default=200,type=int) # ÑµÁ·ÖÜÆÚ
-    parser.add_argument('--res', default=3,type=int)      # Ñ¡ÔñÓÃ¶àÉÙ¸öÁ¬½Ó£¬¿ÉÑ¡Ôñ1¡¢2¡¢3£¬µ«ÊÇÆäÊµ´ú±í0¡¢1¡¢2¸öÁ¬½Ó
-    parser.add_argument('--learning_rate', default=0.005,type=float) # Ñ§Ï°ÂÊ
-    parser.add_argument('--batch_size', default=16,type=int)         # ²»½âÊÍ
-    parser.add_argument('--seed', default=[111,250,444,999,114514],nargs='+',type=int)              # Ëæ»úÊıÖÖ×Ó
-    parser.add_argument('--class_', default='head_ct',type=str)      # Ñ¡Ôñ×ÓÊı¾İ¼¯
-    parser.add_argument('--seg', default=0,type=int)                 # Ñ¡ÔñÊÇ·ñĞèÒª·Ö¸î
-    parser.add_argument('--print_epoch', default=50,type=int)        # Ñ¡Ôñ¹ı¶àÉÙ¸öepoch½øĞĞÒ»´Î´òÓ¡
-    parser.add_argument('--data_path',default='/data/liumingxuan/dingwei/',type=str) # Ñ¡ÔñÊı¾İ¼¯ÎÄ¼ş¼ĞÎ»ÖÃ
-    parser.add_argument('--save_path',default='./checkpoints/',type=str)                             # Ñ¡ÔñÄ£ĞÍÎÄ¼ş±£´æÎ»ÖÃ
-    parser.add_argument('--print_canshu',default=1,type=int)                                         # Ñ¡ÔñÊÇ·ñ´òÓ¡²âÊÔ¼¯µÄÒì³£Öµ
-    parser.add_argument('--score_num',default=1,type=int)                                            # Ñ¡ÔñÊ¹ÓÃÒì³£Í¼ÖĞµÄ¶àÉÙ¸öÒì³£Öµ×÷Îª×îÖÕÒì³£·ÖÊı
+    parser.add_argument('--epochs', default=200,type=int) # è®­ç»ƒå‘¨æœŸ
+    parser.add_argument('--res', default=3,type=int)      # é€‰æ‹©ç”¨å¤šå°‘ä¸ªè¿æ¥ï¼Œå¯é€‰æ‹©1ã€2ã€3ï¼Œä½†æ˜¯å…¶å®ä»£è¡¨0ã€1ã€2ä¸ªè¿æ¥
+    parser.add_argument('--learning_rate', default=0.005,type=float) # å­¦ä¹ ç‡
+    parser.add_argument('--batch_size', default=16,type=int)         # ä¸è§£é‡Š
+    parser.add_argument('--seed', default=[111,250,444,999,114514],nargs='+',type=int)              # éšæœºæ•°ç§å­
+    parser.add_argument('--class_', default='head_ct',type=str)      # é€‰æ‹©å­æ•°æ®é›†
+    parser.add_argument('--seg', default=0,type=int)                 # é€‰æ‹©æ˜¯å¦éœ€è¦åˆ†å‰²
+    parser.add_argument('--print_epoch', default=50,type=int)        # é€‰æ‹©è¿‡å¤šå°‘ä¸ªepochè¿›è¡Œä¸€æ¬¡æ‰“å°
+    parser.add_argument('--data_path',default='/data/liumingxuan/dingwei/',type=str) # é€‰æ‹©æ•°æ®é›†æ–‡ä»¶å¤¹ä½ç½®
+    parser.add_argument('--save_path',default='./checkpoints/',type=str)                             # é€‰æ‹©æ¨¡å‹æ–‡ä»¶ä¿å­˜ä½ç½®
+    parser.add_argument('--print_canshu',default=1,type=int)                                         # é€‰æ‹©æ˜¯å¦æ‰“å°æµ‹è¯•é›†çš„å¼‚å¸¸å€¼
+    parser.add_argument('--score_num',default=1,type=int)                                            # é€‰æ‹©ä½¿ç”¨å¼‚å¸¸å›¾ä¸­çš„å¤šå°‘ä¸ªå¼‚å¸¸å€¼ä½œä¸ºæœ€ç»ˆå¼‚å¸¸åˆ†æ•°
     parser.add_argument('--print_loss',default=1,type=int)
-    parser.add_argument('--img_path',default='./result_img/',type=str)                              # Èç¹ûĞèÒª·Ö¸î£¬Ñ¡ÔñÂ·¾¶
-    parser.add_argument('--vis',default=0,type=int)                              # Èç¹ûĞèÒª·Ö¸î£¬ÊÇ·ñ¿ÉÊÓ»¯Êä³ö
-    parser.add_argument('--cut',default=0,type=int)                         # ÊÇ·ñÊ¹ÓÃcutpasteÊı¾İÔöÇ¿
-    parser.add_argument('--layerloss',default=1,type=int)                         # ÊÇ·ñÊ¹ÓÃ×é¼äÒ»ÖÂĞÔËğÊ§
-    parser.add_argument('--rate',default=0.05,type=float)                         # ×é¼äÒ»ÖÂĞÔËğÊ§Õ¼±È
-    parser.add_argument('--print_max',default=1,type=int)                         # ÊÇ·ñ´òÓ¡×î¼Ñauc
-    parser.add_argument('--net',default='wide_res50',type=str)                    # ¿ÉÊ¹ÓÃµÄnetÀàĞÍ£¬¿ÉÑ¡res18¡¢res34¡¢res50¡¢wide_res50
-    parser.add_argument('--L2',default=0,type=int)                                # ÊÇ·ñÊ¹ÓÃL2ËğÊ§º¯Êı
+    parser.add_argument('--img_path',default='./result_img/',type=str)                              # å¦‚æœéœ€è¦åˆ†å‰²ï¼Œé€‰æ‹©è·¯å¾„
+    parser.add_argument('--vis',default=0,type=int)                              # å¦‚æœéœ€è¦åˆ†å‰²ï¼Œæ˜¯å¦å¯è§†åŒ–è¾“å‡º
+    parser.add_argument('--cut',default=0,type=int)                         # æ˜¯å¦ä½¿ç”¨cutpasteæ•°æ®å¢å¼º
+    parser.add_argument('--layerloss',default=1,type=int)                         # æ˜¯å¦ä½¿ç”¨ç»„é—´ä¸€è‡´æ€§æŸå¤±
+    parser.add_argument('--rate',default=0.05,type=float)                         # ç»„é—´ä¸€è‡´æ€§æŸå¤±å æ¯”
+    parser.add_argument('--print_max',default=1,type=int)                         # æ˜¯å¦æ‰“å°æœ€ä½³auc
+    parser.add_argument('--net',default='wide_res50',type=str)                    # å¯ä½¿ç”¨çš„netç±»å‹ï¼Œå¯é€‰res18ã€res34ã€res50ã€wide_res50
+    parser.add_argument('--L2',default=0,type=int)                                # æ˜¯å¦ä½¿ç”¨L2æŸå¤±å‡½æ•°
     args = parser.parse_args()
     
     
@@ -280,14 +277,14 @@ if __name__ == '__main__':
 //                              `=---='
 //
 //           .............................................
-//                     ·ğ×æ±£ÓÓ             ÓÀÎŞBUG
-//            ·ğÔ»:
-//                     Ğ´×ÖÂ¥ÀïĞ´×Ö¼ä£¬Ğ´×Ö¼äÀï³ÌĞòÔ±£»
-//                     ³ÌĞòÈËÔ±Ğ´³ÌĞò£¬ÓÖÄÃ³ÌĞò»»¾ÆÇ®¡£
-//                     ¾ÆĞÑÖ»ÔÚÍøÉÏ×ø£¬¾Æ×í»¹À´ÍøÏÂÃß£»
-//                     ¾Æ×í¾ÆĞÑÈÕ¸´ÈÕ£¬ÍøÉÏÍøÏÂÄê¸´Äê¡£
-//                     µ«Ô¸ÀÏËÀµçÄÔ¼ä£¬²»Ô¸¾Ï¹ªÀÏ°åÇ°£»
-//                     ±¼³Û±¦Âí¹óÕßÈ¤£¬¹«½»×ÔĞĞ³ÌĞòÔ±¡£
-//                     ±ğÈËĞ¦ÎÒß¯·èñ²£¬ÎÒĞ¦×Ô¼ºÃüÌ«¼ú£»
-//                     ²»¼ûÂú½ÖÆ¯ÁÁÃÃ£¬ÄÄ¸ö¹éµÃ³ÌĞòÔ±£¿
+//                     ä½›ç¥–ä¿ä½‘             æ°¸æ— BUG
+//            ä½›æ›°:
+//                     å†™å­—æ¥¼é‡Œå†™å­—é—´ï¼Œå†™å­—é—´é‡Œç¨‹åºå‘˜ï¼›
+//                     ç¨‹åºäººå‘˜å†™ç¨‹åºï¼Œåˆæ‹¿ç¨‹åºæ¢é…’é’±ã€‚
+//                     é…’é†’åªåœ¨ç½‘ä¸Šåï¼Œé…’é†‰è¿˜æ¥ç½‘ä¸‹çœ ï¼›
+//                     é…’é†‰é…’é†’æ—¥å¤æ—¥ï¼Œç½‘ä¸Šç½‘ä¸‹å¹´å¤å¹´ã€‚
+//                     ä½†æ„¿è€æ­»ç”µè„‘é—´ï¼Œä¸æ„¿é èº¬è€æ¿å‰ï¼›
+//                     å¥”é©°å®é©¬è´µè€…è¶£ï¼Œå…¬äº¤è‡ªè¡Œç¨‹åºå‘˜ã€‚
+//                     åˆ«äººç¬‘æˆ‘å¿’ç–¯ç™«ï¼Œæˆ‘ç¬‘è‡ªå·±å‘½å¤ªè´±ï¼›
+//                     ä¸è§æ»¡è¡—æ¼‚äº®å¦¹ï¼Œå“ªä¸ªå½’å¾—ç¨‹åºå‘˜ï¼Ÿ
 """
