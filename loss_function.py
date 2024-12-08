@@ -30,8 +30,8 @@ def loss_fucntion(a, b, L2):
 def loss_fucntion_2(a, b): 
     mse_loss = torch.nn.MSELoss()
 
-    a2 = F.interpolate(a[2], size=32, mode='bilinear', align_corners=True)
-    b2 = F.interpolate(b[2], size=32, mode='bilinear', align_corners=True)
+    a2 = F.interpolate(a[2], size=64, mode='bilinear', align_corners=True)
+    b2 = F.interpolate(b[2], size=64, mode='bilinear', align_corners=True)
     l1_1 = torch.mean(mse_loss(a2.view(a2.shape[0],-1),b2.view(b2.shape[0],-1)))
     l1_2 = torch.mean(mse_loss(a[1].view(a[1].shape[0],-1),b[1].view(b[1].shape[0],-1)))
     loss2_1 = torch.abs(l1_1 - l1_2)
