@@ -8,7 +8,7 @@ Check the paper in https://ieeexplore.ieee.org/abstract/document/10540605
 Usage:
 
     Run main.py to train and test the Skip_ST model.
-
+     
 Introduction of the code:
 
     1. dataset.py for loading the training and testing dataset.
@@ -22,6 +22,8 @@ Introduction of the code:
     5. eval_func.py for some useful functions.
     
     6. main.py for training and testing the model
+
+    7. data.zip for the example dataset
 
 Pretrained model on head_ct dataset:
 
