@@ -22,3 +22,7 @@ Introduction of the code:
     5. eval_func.py for some useful functions.
     
     6. main.py for training and testing the model
+
+Pretrained model on head_ct dataset:
+
+    https://drive.google.com/file/d/1WKwX1xgPs7UpmWYcgBuVnZwbTSEShgli/view?usp=sharing
