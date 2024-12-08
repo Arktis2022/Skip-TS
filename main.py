@@ -3,7 +3,6 @@ from eval_func import setup_seed
 seeds = [42, 142, 250]
 
 data_path = "/your/datasets/head_ct/"
-data_path = '/data/birth/lmx/data/datasets/head_ct2'
 
 if __name__ == '__main__':
     for seed in seeds:
